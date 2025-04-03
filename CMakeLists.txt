@@ -19,6 +19,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 set(PROJECT_SOURCES
         main.cpp
         ArucoDetector.h
+        FindCamera.h
 
 )
 

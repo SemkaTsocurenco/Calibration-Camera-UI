@@ -9,7 +9,10 @@
 #include <opencv2/aruco.hpp>
 #include <QImage>
 #include <QPixmap>
+#include <QDebug>
 #include "ArucoDetector.h"
+#include "FindCamera.h"
+
 
 // Пример приложения на Qt для отображения видеопотока с камеры с возможностью выбора устройства.
 class MainWindow : public QWidget {
@@ -19,10 +22,12 @@ public:
 
         // Инициализируем все элементы 
         cap_select = new QComboBox(this);
-        cap_select->addItem("Камера 0", 0);
-        cap_select->addItem("Камера 1", 1);
-        cap_select->addItem("Камера 2", 2);
-        cap_select->addItem("Камера 3", 3);
+        cap_select->addItem ("Камера 0 ", 0);
+        cap_select->addItem ("Камера 1 ", 1);
+        cap_select->addItem ("Камера 2 ", 2);
+        cap_select->addItem ("Камера 3 ", 3);
+
+
 
         aruco_dict_select = new QComboBox(this);
         aruco_dict_select->addItem ("Метка 4х4", cv::aruco::DICT_4X4_50);
