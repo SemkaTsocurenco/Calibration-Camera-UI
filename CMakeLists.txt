@@ -14,12 +14,15 @@ find_package(QT NAMES Qt5 REQUIRED COMPONENTS Widgets )
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets )
 find_package(OpenCV 4.5.1 REQUIRED)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS} ./widgets ./utils ./resources ./models ./controllers)
 
 set(PROJECT_SOURCES
         main.cpp
-        ArucoDetector.h
-
+        mainwindow.cpp
+        controllers/CameraController.cpp
+        models/CalibrationSettings.cpp
+        widgets/ExternalCalibrationWidget.cpp
+        widgets/InternalCalibrationWidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
