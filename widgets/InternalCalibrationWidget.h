@@ -12,6 +12,9 @@
 #include <QDialog>
 #include <QMessageBox>
 
+#include "ArucoDialog.h"
+
+
 
 class internalCalibrationWidget : public QWidget{
     Q_OBJECT
@@ -29,7 +32,7 @@ private:
     QPushButton *SaveCalibrate;
     
     QPushButton *CreateAruko;
-    // QDialog *D
+    ArucoDialog *saveArucoDialog;
 
 };
 

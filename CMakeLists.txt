@@ -14,13 +14,14 @@ find_package(QT NAMES Qt5 REQUIRED COMPONENTS Widgets )
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets )
 find_package(OpenCV 4.5.1 REQUIRED)
 
-include_directories(${OpenCV_INCLUDE_DIRS} ./widgets ./utils ./resources ./models ./controllers)
+include_directories(${OpenCV_INCLUDE_DIRS} ./widgets ./utils ./resources ./models ./controllers ./widgets/Dialogs)
 
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         controllers/CameraController.cpp
         models/CalibrationSettings.cpp
+        widgets/Dialogs/ArucoDialog.cpp
 
         widgets/ExternalCalibrationWidget.cpp
         widgets/InternalCalibrationWidget.cpp
