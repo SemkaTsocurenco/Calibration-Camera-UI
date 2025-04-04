@@ -20,6 +20,7 @@
 #include <QImage>
 #include <QMessageBox>
 
+#include "VideoFlowWidget.h"
 #include "CameraController.h"
 #include "ArucoDetector.h"
 #include "InternalCalibrationWidget.h"
@@ -38,6 +39,7 @@ private slots:
     void setupConnections();
     void switchToInternalCalibration();
     void switchToExternalCalibration();
+    void switchToVideoFlowSet();
 
 private:
     QWidget *centralWidget;
@@ -45,19 +47,19 @@ private:
 
     // Управление камерой и видео
     CameraController *cameraController;
-    QComboBox *cameraSelectCombo;
-    QPushButton *openVideoFileButton;
-    QPushButton *CloseButton;
+
 
     // Левая панель с переключаемыми виджетами
     QStackedWidget *controlsStack;
     // InternalCalibrationWidget *internalCalibrationWidget;
     // ExternalCalibrationWidget *externalCalibrationWidget;
+    VideoFlowWidget *videoFlowWidget;
 
     // Меню и действия
     QMenuBar *menuBar;
     QAction *actionInternalCalibration;
     QAction *actionExternalCalibration;
+    QAction *actionVideoFlowSet;
 
     void createMenus();
 };

@@ -17,104 +17,67 @@ MainWindow::~MainWindow() {
 void MainWindow::setupUi() {
     resize(900, 600);
 
-    // Центральный виджет
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    // Элементы управления (левая панель)
+    videoFlowWidget = new VideoFlowWidget(this);
     controlsStack = new QStackedWidget(this);
-    // internalCalibrationWidget = new InternalCalibrationWidget(this);
-    // externalCalibrationWidget = new ExternalCalibrationWidget(this);
-    // controlsStack->addWidget(internalCalibrationWidget);
-    // controlsStack->addWidget(externalCalibrationWidget);
+    controlsStack->addWidget(videoFlowWidget); // теперь в controlsStack весь виджет
 
-    // Видео-панель (правая панель)
     videoLabel = new QLabel(this);
     videoLabel->setStyleSheet("background-color: black;");
 
-    // Выбор камеры и файла
-    cameraSelectCombo = new QComboBox(this);
-    cameraSelectCombo->addItem("Камера 0", 0);
-    cameraSelectCombo->addItem("Камера 1", 1);
-    cameraSelectCombo->addItem("Камера 2", 2);
-    cameraSelectCombo->addItem("Камера 3", 3);
-
-    openVideoFileButton = new QPushButton("Открыть видеофайл", this);
-    CloseButton = new QPushButton("Стоп", this);
-
-    // Компоновка левой панели
-    QVBoxLayout *leftLayout = new QVBoxLayout();
-    leftLayout->addWidget(cameraSelectCombo);
-    leftLayout->addWidget(openVideoFileButton);
-    leftLayout->addWidget(CloseButton);
-    leftLayout->addWidget(controlsStack);
-    leftLayout->addStretch();
-
-    // Главная горизонтальная компоновка
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->addLayout(leftLayout);
+    mainLayout->addWidget(controlsStack);
     mainLayout->addWidget(videoLabel, 1, Qt::AlignCenter);
 
-    // Настройка меню
     createMenus();
 
-    // Инициализация CameraController
     cameraController = new CameraController(this);
+
+    // запускаем по умолчанию камеру 0
+    cameraController->startCamera(0);
 }
+
 
 void MainWindow::createMenus() {
     // Создание верхнего меню
     menuBar = new QMenuBar(this);
     setMenuBar(menuBar);
 
-    QMenu *calibrationMenu = menuBar->addMenu("Режимы калибровки");
+    QMenu *calibrationMenu = menuBar->addMenu("Режимы");
 
+    actionVideoFlowSet = new QAction("Настроить параметры видео потока", this);
     actionInternalCalibration = new QAction("Внутренняя калибровка", this);
     actionExternalCalibration = new QAction("Внешняя калибровка", this);
 
+    calibrationMenu->addAction(actionVideoFlowSet);
     calibrationMenu->addAction(actionInternalCalibration);
     calibrationMenu->addAction(actionExternalCalibration);
 }
 
 void MainWindow::setupConnections() {
-    // Переключение источника видео по выбору камеры
-    connect(cameraSelectCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, [=](int index){
-        int deviceId = cameraSelectCombo->itemData(index).toInt();
-        cameraController->startCamera(deviceId);
-    });
 
-    // Открытие видеофайла
-    connect(openVideoFileButton, &QPushButton::clicked, this, [=](){
-        cameraController->stop();
-        QString filePath = QFileDialog::getOpenFileName(this,
-                                "Выберите видеофайл",
-                                QString(),
-                                "Видео (*.mp4 *.avi *.mov *.mkv)");
-        if (!filePath.isEmpty()) {
-            cameraController->startVideoFile(filePath);
-        }
-    });
+    connect(videoFlowWidget, &VideoFlowWidget::cameraSelected, cameraController, &CameraController::startCamera);
+    connect(videoFlowWidget, &VideoFlowWidget::videoFileOpened, cameraController, &CameraController::startVideoFile);
+    connect(videoFlowWidget, &VideoFlowWidget::stopped, cameraController, &CameraController::stop);
 
-    connect(CloseButton, &QPushButton::clicked, this, [=](){
-        cameraController->stop();
+    connect(videoFlowWidget, &VideoFlowWidget::brightnessChanged, cameraController, &CameraController::setBrightness);
+    connect(videoFlowWidget, &VideoFlowWidget::contrastChanged, cameraController, &CameraController::setContrast);
+    connect(videoFlowWidget, &VideoFlowWidget::grayscaleToggled, cameraController, &CameraController::enableGrayscale);
+    connect(videoFlowWidget, &VideoFlowWidget::resolutionChanged, cameraController, &CameraController::setResolution);
 
-    });
-
-    // Отображение кадров в QLabel
     connect(cameraController, &CameraController::frameReady, this, [=](const QImage &image){
         videoLabel->setPixmap(QPixmap::fromImage(image));
     });
 
-    // Переключение режимов через меню
-    connect(actionInternalCalibration, &QAction::triggered, this, &MainWindow::switchToInternalCalibration);
-    connect(actionExternalCalibration, &QAction::triggered, this, &MainWindow::switchToExternalCalibration);
-
-    // Обработка ошибок
     connect(cameraController, &CameraController::errorOccurred, this, [=](const QString &error){
         QMessageBox::warning(this, "Ошибка", error);
     });
+
+    connect(actionVideoFlowSet, &QAction::triggered, this, &MainWindow::switchToVideoFlowSet);
 }
+
 
 void MainWindow::switchToInternalCalibration() {
     // controlsStack->setCurrentWidget(internalCalibrationWidget);
@@ -122,4 +85,8 @@ void MainWindow::switchToInternalCalibration() {
 
 void MainWindow::switchToExternalCalibration() {
     // controlsStack->setCurrentWidget(externalCalibrationWidget);
+}
+
+void MainWindow::switchToVideoFlowSet() {
+    controlsStack->setCurrentWidget(videoFlowWidget);
 }

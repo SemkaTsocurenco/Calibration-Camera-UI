@@ -48,7 +48,6 @@ void CameraController::grabFrame() {
     cap >> frame;
 
     if (frame.empty()) {
-        // Если видео закончилось, останавливаем таймер
         if (sourceType == VideoFile) {
             stop();
         } else {
@@ -56,12 +55,42 @@ void CameraController::grabFrame() {
         }
         return;
     }
+
+    frame = applySettings(frame);
+
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage img(frame.data, frame.cols, frame.rows,
                static_cast<int>(frame.step), QImage::Format_RGB888);
 
     emit frameReady(img.copy());
 }
+
+
+void CameraController::setBrightness(int value) { brightness = value; }
+void CameraController::setContrast(int value) { contrast = value; }
+void CameraController::enableGrayscale(bool enabled) { grayscaleEnabled = enabled; }
+void CameraController::setResolution(QSize resolution) { targetResolution = resolution; }
+
+cv::Mat CameraController::applySettings(const cv::Mat &frame) {
+    cv::Mat processed = frame.clone();
+
+    // Изменение размера кадра
+    if (processed.cols != targetResolution.width() || processed.rows != targetResolution.height()) {
+        cv::resize(processed, processed, cv::Size(targetResolution.width(), targetResolution.height()));
+    }
+
+    // Применение яркости и контраста
+    processed.convertTo(processed, -1, contrast / 50.0, brightness - 50);
+
+    // Чёрно-белый фильтр
+    if (grayscaleEnabled) {
+        cv::cvtColor(processed, processed, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(processed, processed, cv::COLOR_GRAY2RGB);
+    }
+
+    return processed;
+}
+
 
 
 void CameraController::stop() {

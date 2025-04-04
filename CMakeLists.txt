@@ -21,8 +21,11 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         controllers/CameraController.cpp
         models/CalibrationSettings.cpp
+
         widgets/ExternalCalibrationWidget.cpp
         widgets/InternalCalibrationWidget.cpp
+        widgets/VideoFlowWidget.cpp
+        widgets/VideoFlowWidget.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
