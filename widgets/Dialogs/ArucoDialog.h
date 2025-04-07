@@ -18,7 +18,7 @@
 class ArucoDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit ArucoDialog(QWidget *parent = nullptr);
+    explicit ArucoDialog(QWidget *parent = nullptr, float sizeAruco = 200);
 
 private slots:
     void saveMarkersToDisk();
@@ -30,6 +30,7 @@ private:
     QComboBox *sizeComboBox;
     QPushButton *saveButton;
     QSpinBox *sizeAruco;
+    float sizeMarkers;
 
 };
 

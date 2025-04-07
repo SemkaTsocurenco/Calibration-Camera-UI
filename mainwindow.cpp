@@ -70,6 +70,8 @@ void MainWindow::setupConnections() {
     connect(videoFlowWidget, &VideoFlowWidget::grayscaleToggled, cameraController, &CameraController::enableGrayscale);
     connect(videoFlowWidget, &VideoFlowWidget::resolutionChanged, cameraController, &CameraController::setResolution);
 
+    connect (internalCalibration, &internalCalibrationWidget::started, cameraController,  &CameraController::internalCalibrate);
+    connect (internalCalibration, &internalCalibrationWidget::stop, cameraController,  &CameraController::internalCalibrateStop);
 
     connect(cameraController, &CameraController::frameReady, this, [=](const QImage &image){
         videoLabel->setPixmap(QPixmap::fromImage(image));
@@ -91,6 +93,7 @@ void MainWindow::setupConnections() {
             cameraController->startCamera(cameraController->getCameraSource()); 
         }
     });
+
 
 
     connect(actionVideoFlowSet, &QAction::triggered, this, &MainWindow::switchToVideoFlowSet);

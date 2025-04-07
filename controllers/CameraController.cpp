@@ -1,4 +1,5 @@
 #include "CameraController.h"
+#include <iostream>
 
 CameraController::CameraController(QObject *parent)
     :QObject(parent),
@@ -46,9 +47,8 @@ bool CameraController::startVideoFile(const QString &filePath){
 }
 
 void CameraController::grabFrame() {
-    cv::Mat frame;
-    cap >> frame;
 
+    cap >> frame;
     if (frame.empty()) {
         if (sourceType == VideoFile) {
             stop();
@@ -59,6 +59,17 @@ void CameraController::grabFrame() {
     }
 
     frame = applySettings(frame);
+    if (calibration) {
+        ArucoDetector detector(frame, dictType);
+        frame = detector.getAnnotatedImage();
+        bool success = detector.calibrateCameraFromAruco(sizeMarkers, frame.size());
+        if (success){ 
+            auto matrix  = detector.getCameraMatrix();
+            auto dist = detector.getDistCoeffs();
+            saveCalibration = new ArucoSaveCalibration(matrix, dist, nullptr);
+            saveCalibration->exec();
+        }
+    }
 
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage img(frame.data, frame.cols, frame.rows,
@@ -96,6 +107,13 @@ cv::Mat CameraController::applySettings(const cv::Mat &frame) {
     return processed;
 }
 
+
+void CameraController::internalCalibrate(int dType, float sMarkers){
+    dictType = dType;
+    sizeMarkers = sMarkers;
+    calibration = true;
+}
+void CameraController::internalCalibrateStop() { calibration = false ; } 
 
 
 void CameraController::stop() {

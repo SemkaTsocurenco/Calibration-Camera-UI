@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QTimer>
 #include "ArucoDetector.h"
+#include "ArucoSaveCalibration.h"
 
 
 class CameraController : public QObject {
@@ -28,6 +29,10 @@ public:
     bool startVideoFile(const QString &filePath);
     void stop();
 
+    void internalCalibrate(int dictType, float sizeMarkers);
+
+    void internalCalibrateStop();
+
     const QString& getFileSource();
     int getCameraSource();
 
@@ -38,6 +43,8 @@ signals:
     void started(SourceType type);
     void stopped();
     void errorOccurred(const QString &error);
+    void internalCalibrateSave();
+
 
 private slots:
     void grabFrame();
@@ -50,6 +57,7 @@ public slots:
 
 private:
     cv::VideoCapture cap;
+    cv::Mat frame;
     QTimer timer;    
     SourceType sourceType;
     int brightness = 50;
@@ -59,6 +67,11 @@ private:
     cv::Mat applySettings(const cv::Mat &frame);
     QString VideoName;
     int Device;
+    int dictType;
+    float sizeMarkers;
+    bool calibration = false;
+    ArucoSaveCalibration *saveCalibration;
+    // ArucoDetector ArucoDetector;
 };
 
 

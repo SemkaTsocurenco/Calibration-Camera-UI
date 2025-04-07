@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         controllers/CameraController.cpp
         models/CalibrationSettings.cpp
         widgets/Dialogs/ArucoDialog.cpp
+        widgets/Dialogs/ArucoSaveCalibration.cpp
 
         widgets/ExternalCalibrationWidget.cpp
         widgets/InternalCalibrationWidget.cpp

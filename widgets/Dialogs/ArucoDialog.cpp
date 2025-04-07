@@ -1,8 +1,9 @@
 #include "ArucoDialog.h"
 
-ArucoDialog::ArucoDialog(QWidget *parent)
+ArucoDialog::ArucoDialog(QWidget *parent, float size)
     : QDialog(parent)
 {
+    sizeMarkers = size;
     setupUi(); // Настраиваем интерфейс
 }
 
@@ -19,7 +20,7 @@ void ArucoDialog::setupUi()
 
     sizeAruco = new QSpinBox (this);
     sizeAruco->setRange(0, 1000);     
-    sizeAruco->setValue(200);        
+    sizeAruco->setValue(sizeMarkers);        
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -52,7 +53,7 @@ void ArucoDialog::saveMarkersToDisk()
         return;
     }
 
-    int markerSize =  sizeAruco->value();;
+    int markerSize =  sizeAruco->value();
 
     for (int markerId = 0; markerId < 4; ++markerId) {
         cv::Mat markerImage;

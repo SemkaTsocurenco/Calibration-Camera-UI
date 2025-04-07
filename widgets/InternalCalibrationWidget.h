@@ -23,11 +23,15 @@ public:
     explicit internalCalibrationWidget(QWidget *parent = nullptr);
     
 private slots:
+
     void onCreateArukoClicked();
     void onReloadClicked();
     void onSaveCalibrateClicked();
-
+    void startCalibrate(bool checked);
 signals:
+    void started(int dictType, float sizeMarkers);
+    void stop();
+
     void stopped();
     void resumeRequested();
 
@@ -35,13 +39,17 @@ private:
     void setupUi();
     void setupConnections();
 
-    QComboBox *ArukoSize;
+    QComboBox *ArukoDICTSize;
+    QPushButton *startButton;
     QPushButton *Reload;
     QPushButton *SaveCalibrate;
     QPushButton *CreateAruko;
+    QSpinBox *sizeAruco;
 
     ArucoDialog *saveArucoDialog;
-    // ArucoDetector ArucoDetector;
+
+
+
 };
 
 #endif // INTERNALCALIBRATIONWIDGET_H
