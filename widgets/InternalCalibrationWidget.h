@@ -12,29 +12,36 @@
 #include <QDialog>
 #include <QMessageBox>
 
+
+
 #include "ArucoDialog.h"
+#include "ArucoDetector.h"
 
-
-
-class internalCalibrationWidget : public QWidget{
+class internalCalibrationWidget : public QWidget {
     Q_OBJECT
 public:
     explicit internalCalibrationWidget(QWidget *parent = nullptr);
-
-public slots:
-
+    
 private slots:
+    void onCreateArukoClicked();
+    void onReloadClicked();
+    void onSaveCalibrateClicked();
+
+signals:
+    void stopped();
+    void resumeRequested();
 
 private:
+    void setupUi();
+    void setupConnections();
+
     QComboBox *ArukoSize;
-    QMessageBox *Message;
     QPushButton *Reload;
     QPushButton *SaveCalibrate;
-    
     QPushButton *CreateAruko;
+
     ArucoDialog *saveArucoDialog;
-
+    // ArucoDetector ArucoDetector;
 };
-
 
 #endif // INTERNALCALIBRATIONWIDGET_H

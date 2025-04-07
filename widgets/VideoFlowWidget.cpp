@@ -17,10 +17,12 @@ void VideoFlowWidget::setupUi(){
     cameraSelectCombo->addItem("Камера 2", 2);
     cameraSelectCombo->addItem("Камера 3", 3);
 
-    resolutionComboBox = new QComboBox(this);
-    resolutionComboBox->addItem("640x480", QSize(640, 480));
-    resolutionComboBox->addItem("800x600", QSize(800, 600));
-    resolutionComboBox->addItem("1280x720", QSize(1280, 720));
+    resolutionSlider = new QSlider(Qt::Horizontal, this);
+    resolutionSlider-> setRange(1, 20);
+    resolutionSlider-> setValue(10);
+    resolutionSlider->setTickPosition(QSlider::TicksBothSides);
+    resolutionSlider->setTickInterval(5);
+    resolutionSlider->setSingleStep(2.5);
 
     openVideoFileButton = new QPushButton("Открыть видеофайл", this);
     closeButton = new QPushButton("Стоп", this);
@@ -44,8 +46,8 @@ void VideoFlowWidget::setupUi(){
     layout->addWidget(new QLabel("Контраст:", this));
     layout->addWidget(contrastSlider);
     layout->addWidget(grayscaleCheckBox);
-    layout->addWidget(new QLabel("Разрешение:", this));
-    layout->addWidget(resolutionComboBox);
+    layout->addWidget(new QLabel("Масштаб:", this));
+    layout->addWidget(resolutionSlider);
 
     layout->addStretch();
 };
@@ -56,6 +58,7 @@ void VideoFlowWidget::setupConnections(){
     });
 
     connect(openVideoFileButton, &QPushButton::clicked, this, [=](){
+        emit stopped();  
         QString filePath = QFileDialog::getOpenFileName(this,
                                 "Выберите видеофайл",
                                 QString(),
@@ -68,10 +71,8 @@ void VideoFlowWidget::setupConnections(){
 
     connect(brightnessSlider, &QSlider::valueChanged, this, &VideoFlowWidget::brightnessChanged);
     connect(contrastSlider, &QSlider::valueChanged, this, &VideoFlowWidget::contrastChanged);
+    connect(resolutionSlider, &QSlider::valueChanged, this, &VideoFlowWidget::resolutionChanged);
     connect(grayscaleCheckBox, &QCheckBox::toggled, this, &VideoFlowWidget::grayscaleToggled);
-    connect(resolutionComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index){
-        emit resolutionChanged(resolutionComboBox->itemData(index).toSize());
-    });
 };
 
 

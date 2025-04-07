@@ -15,14 +15,15 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::setupUi() {
-    resize(900, 600);
-
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
+    internalCalibration = new internalCalibrationWidget(this);
     videoFlowWidget = new VideoFlowWidget(this);
+
     controlsStack = new QStackedWidget(this);
-    controlsStack->addWidget(videoFlowWidget); // теперь в controlsStack весь виджет
+    controlsStack->addWidget(videoFlowWidget); 
+    controlsStack->addWidget(internalCalibration);
 
     videoLabel = new QLabel(this);
     videoLabel->setStyleSheet("background-color: black;");
@@ -31,6 +32,8 @@ void MainWindow::setupUi() {
     mainLayout->addWidget(controlsStack);
     mainLayout->addWidget(videoLabel, 1, Qt::AlignCenter);
 
+    // Ограничиваем размер окна под размер добавленных виджетов
+    mainLayout->setSizeConstraint(QLayout::SetMinimumSize);
     createMenus();
 
     cameraController = new CameraController(this);
@@ -67,20 +70,38 @@ void MainWindow::setupConnections() {
     connect(videoFlowWidget, &VideoFlowWidget::grayscaleToggled, cameraController, &CameraController::enableGrayscale);
     connect(videoFlowWidget, &VideoFlowWidget::resolutionChanged, cameraController, &CameraController::setResolution);
 
+
     connect(cameraController, &CameraController::frameReady, this, [=](const QImage &image){
         videoLabel->setPixmap(QPixmap::fromImage(image));
+        this->adjustSize();  
     });
+
 
     connect(cameraController, &CameraController::errorOccurred, this, [=](const QString &error){
         QMessageBox::warning(this, "Ошибка", error);
     });
 
+
+
+    connect(internalCalibration, &internalCalibrationWidget::stopped, cameraController, &CameraController::stop);
+    connect(internalCalibration, &internalCalibrationWidget::resumeRequested, this, [=](){
+        if (cameraController->currentSource() == CameraController::VideoFile){
+            cameraController->startVideoFile(cameraController->getFileSource()); 
+        } else if (cameraController->currentSource() == CameraController::Camera){
+            cameraController->startCamera(cameraController->getCameraSource()); 
+        }
+    });
+
+
     connect(actionVideoFlowSet, &QAction::triggered, this, &MainWindow::switchToVideoFlowSet);
+    connect(actionInternalCalibration, &QAction::triggered, this, &MainWindow::switchToInternalCalibration);
+    connect(actionExternalCalibration, &QAction::triggered, this, &MainWindow::switchToExternalCalibration);
+
 }
 
 
 void MainWindow::switchToInternalCalibration() {
-    // controlsStack->setCurrentWidget(internalCalibrationWidget);
+    controlsStack->setCurrentWidget(internalCalibration);
 }
 
 void MainWindow::switchToExternalCalibration() {

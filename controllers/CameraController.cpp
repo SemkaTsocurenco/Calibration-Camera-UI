@@ -18,6 +18,7 @@ CameraController::SourceType CameraController::currentSource() const {
 
 bool CameraController::startCamera(int device){
     stop();
+    Device = device;
     cap.open(device);
     if (!cap.isOpened()){
         emit errorOccurred("Не удалось открыть камеру №" + QString::number(device));
@@ -32,6 +33,7 @@ bool CameraController::startCamera(int device){
 
 bool CameraController::startVideoFile(const QString &filePath){
     stop();
+    VideoName = filePath;
     cap.open(filePath.toStdString());
     if (!cap.isOpened()){
         emit errorOccurred("Не удалось открыть видео " + filePath);
@@ -68,15 +70,18 @@ void CameraController::grabFrame() {
 
 void CameraController::setBrightness(int value) { brightness = value; }
 void CameraController::setContrast(int value) { contrast = value; }
+void CameraController::setResolution(int value) { targetResolution = value; }
 void CameraController::enableGrayscale(bool enabled) { grayscaleEnabled = enabled; }
-void CameraController::setResolution(QSize resolution) { targetResolution = resolution; }
+const QString& CameraController::getFileSource() { return VideoName; }
+int CameraController::getCameraSource() { return Device; }
+
 
 cv::Mat CameraController::applySettings(const cv::Mat &frame) {
     cv::Mat processed = frame.clone();
 
     // Изменение размера кадра
-    if (processed.cols != targetResolution.width() || processed.rows != targetResolution.height()) {
-        cv::resize(processed, processed, cv::Size(targetResolution.width(), targetResolution.height()));
+    if (processed.cols != frame.cols*(float(targetResolution)/10) || processed.rows != frame.rows*(float(targetResolution)/10)) {
+        cv::resize(processed, processed, cv::Size( frame.cols*(float(targetResolution)/10),  frame.rows*(float(targetResolution)/10)));
     }
 
     // Применение яркости и контраста
@@ -97,7 +102,6 @@ void CameraController::stop() {
     if (cap.isOpened()) {
         timer.stop();
         cap.release();
-        sourceType = None;
         emit stopped();
     }
 }

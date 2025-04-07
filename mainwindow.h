@@ -51,8 +51,8 @@ private:
 
     // Левая панель с переключаемыми виджетами
     QStackedWidget *controlsStack;
-    // InternalCalibrationWidget *internalCalibrationWidget;
-    // ExternalCalibrationWidget *externalCalibrationWidget;
+    internalCalibrationWidget *internalCalibration;
+        // ExternalCalibrationWidget *externalCalibrationWidget;
     VideoFlowWidget *videoFlowWidget;
 
     // Меню и действия

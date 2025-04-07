@@ -1,36 +1,35 @@
 #ifndef ARUCODIALOG_H
 #define ARUCODIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QComboBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QSlider>
-#include <QCheckBox>
-#include <QLabel>
 #include <QDebug>
 #include <QFileDialog>
-#include <QDialog>
-#include <QMessageBox>
+#include <QSpinBox>
+#include <QLabel>
+
+
 
 #include <opencv2/aruco.hpp>
-#include <opencv2/imgcodecs.hpp>  
-#include <filesystem>            
-#include <iostream>
+#include <opencv2/imgcodecs.hpp>
 
-class ArucoDialog : public QDialog{
+class ArucoDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit ArucoDialog(QDialog *parent = nullptr);
+    explicit ArucoDialog(QWidget *parent = nullptr);
 
 private slots:
-    void save_markers();
+    void saveMarkersToDisk();
+
 
 private:
-    QComboBox *Size;
-    QPushButton *Save;
+    void setupUi();  // для настройки интерфейса
 
-    void saveArucoMarkers();
+    QComboBox *sizeComboBox;
+    QPushButton *saveButton;
+    QSpinBox *sizeAruco;
 
 };
 

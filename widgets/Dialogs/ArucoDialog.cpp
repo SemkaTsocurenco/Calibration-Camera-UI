@@ -1,57 +1,71 @@
 #include "ArucoDialog.h"
 
-
-void ArucoDialog::saveArucoMarkers()
+ArucoDialog::ArucoDialog(QWidget *parent)
+    : QDialog(parent)
 {
-    // Создаём элементы интерфейса
-    Size = new QComboBox(this);
-    Size->addItem ("Метка 4х4", cv::aruco::DICT_4X4_50);
-    Size->addItem ("Метка 5х5", cv::aruco::DICT_5X5_100);
-    Size->addItem ("Метка 6х6", cv::aruco::DICT_6X6_100);
-    Size->addItem ("Метка 7х7", cv::aruco::DICT_7X7_50);
-
-    Save = new QPushButton("Сохранить изображения для меток");
-
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(Size);
-    layout->addWidget(Save);
-    setLayout(layout);
-
-    // 2) Правильная форма connect:
-    connect(Save, &QPushButton::clicked, this, &ArucoDialog::save_markers);
+    setupUi(); // Настраиваем интерфейс
 }
 
+void ArucoDialog::setupUi()
+{
+    // Создание элементов интерфейса
+    sizeComboBox = new QComboBox(this);
+    sizeComboBox->addItem("Метки 4х4", cv::aruco::DICT_4X4_50);
+    sizeComboBox->addItem("Метки 5х5", cv::aruco::DICT_5X5_100);
+    sizeComboBox->addItem("Метки 6х6", cv::aruco::DICT_6X6_100);
+    sizeComboBox->addItem("Метки 7х7", cv::aruco::DICT_7X7_50);
 
+    saveButton = new QPushButton("Сохранить изображения меток", this);
 
-void ArucoDialog::save_markers(){
-    int currentDictID = Size->currentData().toInt();
+    sizeAruco = new QSpinBox (this);
+    sizeAruco->setRange(0, 1000);     
+    sizeAruco->setValue(200);        
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    layout->addWidget(new QLabel("Размер меток (мм):", this));
+    layout->addWidget(sizeAruco);
+    layout->addWidget(new QLabel("Словарь меток:", this));
+    layout->addWidget(sizeComboBox);
+    layout->addSpacing(20);
+    layout->addWidget(saveButton);
+
+    setLayout(layout);
+
+    // Связываем кнопку сохранения с методом сохранения маркеров
+    connect(saveButton, &QPushButton::clicked, this, &ArucoDialog::saveMarkersToDisk);
+}
+
+void ArucoDialog::saveMarkersToDisk()
+{
+    int currentDictID = sizeComboBox->currentData().toInt();
     cv::Ptr<cv::aruco::Dictionary> arucoDict = cv::aruco::getPredefinedDictionary(currentDictID);
 
     QString saveDir = QFileDialog::getExistingDirectory(
         this,
-        "Выберите папку для сохранения",
-        QDir::homePath() // или другой путь по умолчанию, например QDir::currentPath()
+        "Выберите папку для сохранения маркеров",
+        QDir::homePath()
     );
 
     if (saveDir.isEmpty()) {
-        qDebug() << "Выбор директории отменен.";
+        qDebug() << "Выбор директории отменён.";
         return;
     }
 
-    int markerSize = 200;
+    int markerSize =  sizeAruco->value();;
 
-    for (int markerId = 0; markerId < 4; ++markerId)
-    {
+    for (int markerId = 0; markerId < 4; ++markerId) {
         cv::Mat markerImage;
         cv::aruco::drawMarker(arucoDict, markerId, markerSize, markerImage);
+
         QString fileName = QString("marker_%1.png").arg(markerId);
         QString fullPath = saveDir + "/" + fileName;
-        if (!cv::imwrite(fullPath.toStdString(), markerImage))
-        {
+
+        if (!cv::imwrite(fullPath.toStdString(), markerImage)) {
             qWarning() << "Ошибка при сохранении файла:" << fullPath;
             continue;
         }
+
         qDebug() << "Сохранён файл:" << fullPath;
     }
-    
-};
+}

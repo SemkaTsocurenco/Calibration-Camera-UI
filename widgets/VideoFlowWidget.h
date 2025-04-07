@@ -25,8 +25,8 @@ signals:
 
     void brightnessChanged(int value);
     void contrastChanged(int value);
+    void resolutionChanged(int value);
     void grayscaleToggled(bool enabled);
-    void resolutionChanged(QSize resolution);
 
 private:
     QComboBox *cameraSelectCombo;
@@ -35,8 +35,8 @@ private:
 
     QSlider *brightnessSlider;
     QSlider *contrastSlider;
+    QSlider *resolutionSlider;
     QCheckBox *grayscaleCheckBox;
-    QComboBox *resolutionComboBox;
 
     void setupUi();
     void setupConnections();
