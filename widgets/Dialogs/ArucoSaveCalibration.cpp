@@ -41,6 +41,6 @@ void ArucoSaveCalibration::saveMatrix()
         fs << "distCoeffs" << Dist;
         fs.release();
         QMessageBox::information(this, "Сохранение", QString("Файл калибровки сохранён в %1").arg(filePath));
-
     }
+    
 }

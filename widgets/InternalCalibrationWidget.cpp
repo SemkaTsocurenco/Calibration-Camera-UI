@@ -19,9 +19,7 @@ void internalCalibrationWidget::setupUi() {
     startButton = new QPushButton("Начать калибровку", this);
     startButton->setCheckable(true);
     
-    // Кнопки
-    Reload = new QPushButton("Перезагрузить калибровку", this);
-    SaveCalibrate = new QPushButton("Сохранить результаты калибровки", this);
+
     CreateAruko = new QPushButton("Создать ArUco-маркеры", this);
 
     sizeAruco = new QSpinBox (this);
@@ -37,8 +35,6 @@ void internalCalibrationWidget::setupUi() {
 
     mainLayout->addSpacing(10);
     mainLayout->addWidget(startButton);
-    mainLayout->addWidget(Reload);
-    mainLayout->addWidget(SaveCalibrate);
     mainLayout->addSpacing(20);
     mainLayout->addWidget(CreateAruko);
     mainLayout->addStretch();
@@ -51,8 +47,6 @@ void internalCalibrationWidget::setupConnections() {
 
     connect(startButton, &QPushButton::toggled, this, &internalCalibrationWidget::startCalibrate);
     connect(CreateAruko, &QPushButton::clicked, this, &internalCalibrationWidget::onCreateArukoClicked);
-    connect(Reload, &QPushButton::clicked, this, &internalCalibrationWidget::onReloadClicked);
-    connect(SaveCalibrate, &QPushButton::clicked, this, &internalCalibrationWidget::onSaveCalibrateClicked);
 }
 
 void internalCalibrationWidget::onCreateArukoClicked() {
@@ -61,19 +55,6 @@ void internalCalibrationWidget::onCreateArukoClicked() {
     saveArucoDialog->exec();
     emit resumeRequested();
 }
-
-void internalCalibrationWidget::onReloadClicked() {
-    QMessageBox::information(this, "Перезагрузка", "Калибровка была перезагружена!");
-    // здесь добавь функционал перезагрузки калибровки
-    emit resumeRequested();
-}
-
-void internalCalibrationWidget::onSaveCalibrateClicked() {
-    emit stopped();  
-
-    emit resumeRequested();
-}
-
 
 void internalCalibrationWidget::startCalibrate(bool checked){
     if (checked){

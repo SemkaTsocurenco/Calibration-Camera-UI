@@ -26,7 +26,7 @@ bool CameraController::startCamera(int device){
         return false;
     }
     
-    timer.start(33);
+    timer.start(10);
     sourceType = Camera;
     emit started(Camera);
     return true;
@@ -40,7 +40,7 @@ bool CameraController::startVideoFile(const QString &filePath){
         emit errorOccurred("Не удалось открыть видео " + filePath);
         return false;
     }
-    timer.start(33);
+    timer.start(10);
     sourceType = VideoFile;
     emit started(VideoFile);
     return true;

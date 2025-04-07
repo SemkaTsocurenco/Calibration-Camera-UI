@@ -25,9 +25,8 @@ public:
 private slots:
 
     void onCreateArukoClicked();
-    void onReloadClicked();
-    void onSaveCalibrateClicked();
     void startCalibrate(bool checked);
+    
 signals:
     void started(int dictType, float sizeMarkers);
     void stop();

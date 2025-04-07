@@ -77,13 +77,9 @@ void MainWindow::setupConnections() {
         videoLabel->setPixmap(QPixmap::fromImage(image));
         this->adjustSize();  
     });
-
-
     connect(cameraController, &CameraController::errorOccurred, this, [=](const QString &error){
         QMessageBox::warning(this, "Ошибка", error);
     });
-
-
 
     connect(internalCalibration, &internalCalibrationWidget::stopped, cameraController, &CameraController::stop);
     connect(internalCalibration, &internalCalibrationWidget::resumeRequested, this, [=](){
@@ -99,7 +95,6 @@ void MainWindow::setupConnections() {
     connect(actionVideoFlowSet, &QAction::triggered, this, &MainWindow::switchToVideoFlowSet);
     connect(actionInternalCalibration, &QAction::triggered, this, &MainWindow::switchToInternalCalibration);
     connect(actionExternalCalibration, &QAction::triggered, this, &MainWindow::switchToExternalCalibration);
-
 }
 
 

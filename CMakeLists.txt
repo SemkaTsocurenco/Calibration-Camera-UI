@@ -20,14 +20,12 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         controllers/CameraController.cpp
-        models/CalibrationSettings.cpp
         widgets/Dialogs/ArucoDialog.cpp
         widgets/Dialogs/ArucoSaveCalibration.cpp
 
         widgets/ExternalCalibrationWidget.cpp
         widgets/InternalCalibrationWidget.cpp
         widgets/VideoFlowWidget.cpp
-        widgets/VideoFlowWidget.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
