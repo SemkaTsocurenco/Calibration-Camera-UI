@@ -41,10 +41,7 @@ private:
     QComboBox *ArukoDICTSize;
     QPushButton *startButton;
     QPushButton *Reload;
-    QPushButton *SaveCalibrate;
-    QPushButton *CreateAruko;
     QSpinBox *sizeAruco;
-
     ArucoDialog *saveArucoDialog;
 
 
