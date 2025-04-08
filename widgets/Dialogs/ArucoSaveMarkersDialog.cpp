@@ -1,13 +1,13 @@
-#include "ArucoDialog.h"
+#include "ArucoSaveMarkersDialog.h"
 
-ArucoDialog::ArucoDialog(QWidget *parent, float size)
+ArucoSaveMarkersDialog::ArucoSaveMarkersDialog(QWidget *parent, float size)
     : QDialog(parent)
 {
     sizeMarkers = size;
     setupUi(); // Настраиваем интерфейс
 }
 
-void ArucoDialog::setupUi()
+void ArucoSaveMarkersDialog::setupUi()
 {
     // Создание элементов интерфейса
     sizeComboBox = new QComboBox(this);
@@ -34,10 +34,10 @@ void ArucoDialog::setupUi()
     setLayout(layout);
 
     // Связываем кнопку сохранения с методом сохранения маркеров
-    connect(saveButton, &QPushButton::clicked, this, &ArucoDialog::saveMarkersToDisk);
+    connect(saveButton, &QPushButton::clicked, this, &ArucoSaveMarkersDialog::saveMarkersToDisk);
 }
 
-void ArucoDialog::saveMarkersToDisk()
+void ArucoSaveMarkersDialog::saveMarkersToDisk()
 {
     int currentDictID = sizeComboBox->currentData().toInt();
     cv::Ptr<cv::aruco::Dictionary> arucoDict = cv::aruco::getPredefinedDictionary(currentDictID);

@@ -12,10 +12,8 @@
 #include <QDialog>
 #include <QMessageBox>
 
-
-
-// #include "ArucoDialog.h"
-// #include "ArucoDetector.h"
+#include "ChArucoSaveBoardDialog.h"
+#include "ChArukoSaveCalibration.h"
 
 class externalCalibrationWidget : public QWidget {
     Q_OBJECT
@@ -35,7 +33,7 @@ signals:
     void stopAuto();
     void stopHand();
     
-    void stopped();
+    void stop();
     void resumeRequested();
 
 private:
@@ -45,8 +43,8 @@ private:
     
     QSpinBox *H_count;
     QSpinBox *W_count;
-    QSpinBox *squareSize;
-    QSpinBox *markerSize;
+    QDoubleSpinBox *squareSize;
+    QDoubleSpinBox *markerSize;
 
     QComboBox *ArukoDICTSize;
 
@@ -55,7 +53,7 @@ private:
     QPushButton *StartAutoSetCollectorButton;
     QPushButton *CreateCalibrateFileButton;
 
-
+    ChArucoSaveBoardDialog *saveArucoDialog;
 
 };
 

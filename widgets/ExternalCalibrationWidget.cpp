@@ -1,4 +1,4 @@
-#include "externalCalibrationWidget.h"
+#include "ExternalCalibrationWidget.h"
 
 externalCalibrationWidget::externalCalibrationWidget(QWidget *parent)
     : QWidget(parent)
@@ -9,22 +9,22 @@ externalCalibrationWidget::externalCalibrationWidget(QWidget *parent)
 
 void externalCalibrationWidget::setupUi() {
 
-    squareSize = new QSpinBox (this);
-    squareSize->setRange(0, 1);     
-    squareSize->setValue(0.3);
+    squareSize = new QDoubleSpinBox (this);
+    squareSize->setRange(0, 1000);     
+    squareSize->setValue(60);
 
-    markerSize = new QSpinBox (this);
-    markerSize->setRange(0, 1);     
-    markerSize->setValue(0.3);
+    markerSize = new QDoubleSpinBox (this);
+    markerSize->setRange(0, 1000);     
+    markerSize->setValue(30);
 
 
     H_count = new QSpinBox (this);
     H_count->setRange(2, 20);     
-    H_count->setValue(50);
+    H_count->setValue(4);
 
     W_count = new QSpinBox (this);
-    W_count->setRange(0, 1);     
-    W_count->setValue(0.3);
+    W_count->setRange(2, 20);     
+    W_count->setValue(6);
 
     
     ArukoDICTSize = new QComboBox(this);
@@ -33,21 +33,52 @@ void externalCalibrationWidget::setupUi() {
     ArukoDICTSize->addItem("Метка 6х6", cv::aruco::DICT_6X6_100);
     ArukoDICTSize->addItem("Метка 7х7", cv::aruco::DICT_7X7_50);
 
-
-    startButton = new QPushButton("Начать калибровку", this);
-    startButton->setCheckable(true);
     
+    CreateCharucoButton = new QPushButton ("Создать файл ChAruco доски" , this );
+    CreateCharucoButton-> setCheckable(false);
 
-    CreateAruko = new QPushButton("Создать ArUco-маркеры", this);
+    StartTwoHandSetCollectorButton = new QPushButton ("Ручное создание сета фотографий" , this );
+    StartTwoHandSetCollectorButton-> setCheckable(true);
 
-    sizeAruco = new QSpinBox (this);
-    sizeAruco->setRange(0, 1000);     
-    sizeAruco->setValue(200);     
+    StartAutoSetCollectorButton = new QPushButton ("Автоматическое создание сета фотографий" , this );
+    StartAutoSetCollectorButton-> setCheckable(true);
+
+    CreateCalibrateFileButton = new QPushButton ("Создать калибровачный файл" , this );
+    CreateCalibrateFileButton-> setCheckable(false);
+
+
+    QLabel* label = new QLabel("Выбор размера ChAruco доски", this);
+    QLabel* labelH = new QLabel("H:", this);
+    QLabel* labelW = new QLabel("W:", this);
+
+    QHBoxLayout* layout1 = new QHBoxLayout();
+    layout1->addWidget(label); // Добавляем заголовок
+    layout1->addWidget(labelH); // Добавляем подпись для H
+    layout1->addWidget(H_count); // Добавляем поле ввода для H
+    layout1->addWidget(labelW); // Добавляем подпись для W
+    layout1->addWidget(W_count); // Добавляем поле ввода для W
+
+    QHBoxLayout* layout2 = new QHBoxLayout();
+    layout2->addWidget(new QLabel("squareSize:", this)); // Добавляем подпись для H
+    layout2->addWidget(squareSize); // Добавляем поле ввода для H
+    layout2->addWidget(new QLabel("markerSize:", this)); // Добавляем подпись для W
+    layout2->addWidget(markerSize); // Добавляем поле ввода для W
+
 
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(new QLabel("Выбор размера ArUco-маркера:", this));
+    mainLayout->addLayout(layout1);
+    mainLayout->addLayout(layout2);
+    
     mainLayout->addSpacing(20);
+    mainLayout->addWidget(new QLabel("Выбор словаря Aruco меток:", this));
+    mainLayout->addWidget(ArukoDICTSize);
+    mainLayout->addSpacing(40);
+    mainLayout->addWidget(CreateCharucoButton);
+    mainLayout->addWidget(StartTwoHandSetCollectorButton);
+    mainLayout->addWidget(StartAutoSetCollectorButton);
+    mainLayout->addWidget(CreateCalibrateFileButton);
+
     mainLayout->addStretch();
 
     setLayout(mainLayout);
@@ -55,24 +86,39 @@ void externalCalibrationWidget::setupUi() {
 
 void externalCalibrationWidget::setupConnections() {
 
+    connect(StartTwoHandSetCollectorButton, &QPushButton::toggled, this, &externalCalibrationWidget::StartHandSetCollector);
+    connect(StartAutoSetCollectorButton, &QPushButton::toggled, this, &externalCalibrationWidget::StartAutoSetCollector);
 
-    connect(startButton, &QPushButton::toggled, this, &externalCalibrationWidget::startCalibrate);
-    connect(CreateAruko, &QPushButton::clicked, this, &externalCalibrationWidget::onCreateArukoClicked);
+    connect(CreateCharucoButton, &QPushButton::clicked, this, &externalCalibrationWidget::onCreateChArukoClicked);
+    connect(CreateCalibrateFileButton, &QPushButton::clicked, this, &externalCalibrationWidget::CreateCalibrateFile);
 }
 
-void externalCalibrationWidget::onCreateArukoClicked() {
-    emit stopped();  
-    saveArucoDialog = new ArucoDialog(this, sizeAruco->value());
+void externalCalibrationWidget::StartHandSetCollector(bool checked){
+    
+}
+
+void externalCalibrationWidget::StartAutoSetCollector(bool checked){
+
+}
+
+
+void externalCalibrationWidget::onCreateChArukoClicked() {
+    emit stop();  
+    saveArucoDialog = new ChArucoSaveBoardDialog(this, H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());
     saveArucoDialog->exec();
     emit resumeRequested();
 }
 
-void externalCalibrationWidget::startCalibrate(bool checked){
-    if (checked){
-        int dictType = ArukoDICTSize->currentData().toInt();
-        float size = sizeAruco->value();
-        emit started(dictType, size);  
-    } else {
-        emit stop();
-    }
+void externalCalibrationWidget::CreateCalibrateFile(){
 }
+
+
+// void externalCalibrationWidget::startCalibrate(bool checked){
+//     if (checked){
+//         int dictType = ArukoDICTSize->currentData().toInt();
+//         float size = sizeAruco->value();
+//         emit started(dictType, size);  
+//     } else {
+//         emit stop();
+//     }
+// }

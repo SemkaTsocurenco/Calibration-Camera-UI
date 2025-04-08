@@ -51,7 +51,7 @@ void internalCalibrationWidget::setupConnections() {
 
 void internalCalibrationWidget::onCreateArukoClicked() {
     emit stopped();  
-    saveArucoDialog = new ArucoDialog(this, sizeAruco->value());
+    saveArucoDialog = new ArucoSaveMarkersDialog(this, sizeAruco->value());
     saveArucoDialog->exec();
     emit resumeRequested();
 }

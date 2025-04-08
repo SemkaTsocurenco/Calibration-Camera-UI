@@ -1,5 +1,5 @@
-#ifndef ARUCODIALOG_H
-#define ARUCODIALOG_H
+#ifndef ARUCOSAVEMARKERSDIALOG_H
+#define ARUCOSAVEMARKERSDIALOG_H
 
 #include <QDialog>
 #include <QComboBox>
@@ -15,10 +15,10 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-class ArucoDialog : public QDialog {
+class ArucoSaveMarkersDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit ArucoDialog(QWidget *parent = nullptr, float sizeAruco = 200);
+    explicit ArucoSaveMarkersDialog(QWidget *parent = nullptr, float sizeAruco = 200);
 
 private slots:
     void saveMarkersToDisk();
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif // ARUCODIALOG_H
+#endif // ARUCOSAVEMARKERSDIALOG_H

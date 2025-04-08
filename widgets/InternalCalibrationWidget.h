@@ -14,7 +14,7 @@
 
 
 
-#include "ArucoDialog.h"
+#include "ArucoSaveMarkersDialog.h"
 #include "ArucoDetector.h"
 
 class internalCalibrationWidget : public QWidget {
@@ -41,11 +41,14 @@ private:
     QComboBox *ArukoDICTSize;
     QPushButton *startButton;
     QPushButton *Reload;
+    QPushButton *CreateAruko;
     QSpinBox *sizeAruco;
-    ArucoDialog *saveArucoDialog;
+    ArucoSaveMarkersDialog *saveArucoDialog;
 
 
 
 };
 
 #endif // INTERNALCALIBRATIONWIDGET_H
+
+

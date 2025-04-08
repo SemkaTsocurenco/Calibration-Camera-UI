@@ -19,11 +19,13 @@ void MainWindow::setupUi() {
     setCentralWidget(centralWidget);
 
     internalCalibration = new internalCalibrationWidget(this);
+    externalCalibration = new externalCalibrationWidget(this);
     videoFlowWidget = new VideoFlowWidget(this);
 
     controlsStack = new QStackedWidget(this);
     controlsStack->addWidget(videoFlowWidget); 
     controlsStack->addWidget(internalCalibration);
+    controlsStack->addWidget(externalCalibration);
 
     videoLabel = new QLabel(this);
     videoLabel->setStyleSheet("background-color: black;");
@@ -73,6 +75,8 @@ void MainWindow::setupConnections() {
     connect (internalCalibration, &internalCalibrationWidget::started, cameraController,  &CameraController::internalCalibrate);
     connect (internalCalibration, &internalCalibrationWidget::stop, cameraController,  &CameraController::internalCalibrateStop);
 
+    connect (externalCalibration, &externalCalibrationWidget::stop, cameraController,  &CameraController::stop);
+
     connect(cameraController, &CameraController::frameReady, this, [=](const QImage &image){
         videoLabel->setPixmap(QPixmap::fromImage(image));
         this->adjustSize();  
@@ -83,6 +87,14 @@ void MainWindow::setupConnections() {
 
     connect(internalCalibration, &internalCalibrationWidget::stopped, cameraController, &CameraController::stop);
     connect(internalCalibration, &internalCalibrationWidget::resumeRequested, this, [=](){
+        if (cameraController->currentSource() == CameraController::VideoFile){
+            cameraController->startVideoFile(cameraController->getFileSource()); 
+        } else if (cameraController->currentSource() == CameraController::Camera){
+            cameraController->startCamera(cameraController->getCameraSource()); 
+        }
+    });
+
+    connect(externalCalibration, &externalCalibrationWidget::resumeRequested, this, [=](){
         if (cameraController->currentSource() == CameraController::VideoFile){
             cameraController->startVideoFile(cameraController->getFileSource()); 
         } else if (cameraController->currentSource() == CameraController::Camera){
@@ -103,7 +115,7 @@ void MainWindow::switchToInternalCalibration() {
 }
 
 void MainWindow::switchToExternalCalibration() {
-    // controlsStack->setCurrentWidget(externalCalibrationWidget);
+    controlsStack->setCurrentWidget(externalCalibration);
 }
 
 void MainWindow::switchToVideoFlowSet() {
