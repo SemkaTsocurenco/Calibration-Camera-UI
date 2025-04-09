@@ -10,7 +10,7 @@
 #include <QTimer>
 #include "ArucoDetector.h"
 #include "ArucoSaveCalibration.h"
-
+#include "ChArucoCalculateCalibrate.h"
 
 class CameraController : public QObject {
     Q_OBJECT
@@ -20,6 +20,14 @@ public:
         Camera,
         VideoFile,
         None
+    };
+
+    /**
+     * @brief Режим захвата изображений
+     */
+    enum CaptureMode {
+        MANUAL,     // Ручной режим - снимок делается по нажатию пробела, если доска обнаружена
+        AUTOMATIC   // Автоматический режим - снимок делается каждые 7 секунд, если доска обнаружена
     };
 
     CameraController(QObject *parent = nullptr);
@@ -32,6 +40,11 @@ public:
     void internalCalibrate(int dictType, float sizeMarkers);
 
     void internalCalibrateStop();
+
+    void externalStartHand(int h, int w, float sqSize, float markerSize, int dictID);
+    void externalStartAuto(int h, int w, float sqSize, float markerSize, int dictID);
+    void externalStopHand();
+    void externalStopAuto();
 
     const QString& getFileSource();
     int getCameraSource();
@@ -60,6 +73,7 @@ private:
     cv::Mat frame;
     QTimer timer;    
     SourceType sourceType;
+    CaptureMode captureMode;
     int brightness = 50;
     int contrast = 50;
     int targetResolution = 10;
@@ -71,6 +85,14 @@ private:
     float sizeMarkers;
     bool calibration = false;
     ArucoSaveCalibration *saveCalibration;
+    bool externalCalibrateHand = false;
+    bool externalCalibrateAuto = false;
+    int H;
+    int W;
+    float SqSize;
+    float MarkerSize;
+    int DictID;
+
     // ArucoDetector ArucoDetector;
 };
 

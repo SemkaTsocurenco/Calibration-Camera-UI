@@ -17,6 +17,11 @@ CameraController::SourceType CameraController::currentSource() const {
     return sourceType;
 }
 
+// CameraController::CaptureMode CameraController::currentMode() const {
+//     return captureMode;
+// }
+
+
 bool CameraController::startCamera(int device){
     stop();
     Device = device;
@@ -71,6 +76,15 @@ void CameraController::grabFrame() {
         }
     }
 
+    if (externalCalibrateHand){
+        CharucoCalibrator charucoCalibrator (H, W, SqSize, MarkerSize, DictID);
+        frame = charucoCalibrator.captureCalibrationSet(CharucoCalibrator::MANUAL, "images", frame);
+
+    }
+    if (externalCalibrateAuto){
+        CharucoCalibrator charucoCalibrator (H, W, SqSize, MarkerSize, DictID);
+        frame = charucoCalibrator.captureCalibrationSet(CharucoCalibrator::AUTOMATIC, "images", frame);
+    }
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage img(frame.data, frame.cols, frame.rows,
                static_cast<int>(frame.step), QImage::Format_RGB888);
@@ -114,6 +128,31 @@ void CameraController::internalCalibrate(int dType, float sMarkers){
     calibration = true;
 }
 void CameraController::internalCalibrateStop() { calibration = false ; } 
+
+
+
+void CameraController::externalStartHand(int h, int w, float sqSize, float markerSize, int dictID){
+    H = h;
+    W = w;
+    SqSize = sqSize;
+    MarkerSize = markerSize;
+    DictID = dictID;
+    externalCalibrateHand = true;   
+    externalCalibrateAuto = false;   
+
+}
+void CameraController::externalStartAuto(int h, int w, float sqSize, float markerSize, int dictID){
+    H = h;
+    W = w;
+    SqSize = sqSize;
+    MarkerSize = markerSize;
+    DictID = dictID;    
+    externalCalibrateAuto = true;   
+    externalCalibrateHand = false;   
+}
+
+void CameraController::externalStopHand(){externalCalibrateHand = false;}
+void CameraController::externalStopAuto(){externalCalibrateAuto = false;}
 
 
 void CameraController::stop() {

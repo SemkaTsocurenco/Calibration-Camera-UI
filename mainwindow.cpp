@@ -77,6 +77,11 @@ void MainWindow::setupConnections() {
 
     connect (externalCalibration, &externalCalibrationWidget::stop, cameraController,  &CameraController::stop);
 
+    connect (externalCalibration, &externalCalibrationWidget::startHand, cameraController,  &CameraController::externalStartHand);
+    connect (externalCalibration, &externalCalibrationWidget::startAuto, cameraController,  &CameraController::externalStartAuto);
+    connect (externalCalibration, &externalCalibrationWidget::stopHand, cameraController,  &CameraController::externalStopHand);
+    connect (externalCalibration, &externalCalibrationWidget::stopAuto, cameraController,  &CameraController::externalStopAuto);
+
     connect(cameraController, &CameraController::frameReady, this, [=](const QImage &image){
         videoLabel->setPixmap(QPixmap::fromImage(image));
         this->adjustSize();  

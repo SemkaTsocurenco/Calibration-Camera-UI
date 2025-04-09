@@ -93,15 +93,6 @@ void externalCalibrationWidget::setupConnections() {
     connect(CreateCalibrateFileButton, &QPushButton::clicked, this, &externalCalibrationWidget::CreateCalibrateFile);
 }
 
-void externalCalibrationWidget::StartHandSetCollector(bool checked){
-    
-}
-
-void externalCalibrationWidget::StartAutoSetCollector(bool checked){
-
-}
-
-
 void externalCalibrationWidget::onCreateChArukoClicked() {
     emit stop();  
     saveChArucoBoardDialog = new ChArucoSaveBoardDialog(this, H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());
@@ -116,13 +107,21 @@ void externalCalibrationWidget::CreateCalibrateFile(){
     emit resumeRequested();
 }
 
+void externalCalibrationWidget::StartAutoSetCollector(bool checked){
+    if (checked){
+        emit startAuto(H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
+        emit stopHand();
+    } else {
+        emit stopAuto();
+    }
+}
 
-// void externalCalibrationWidget::startCalibrate(bool checked){
-//     if (checked){
-//         int dictType = ArukoDICTSize->currentData().toInt();
-//         float size = sizeAruco->value();
-//         emit started(dictType, size);  
-//     } else {
-//         emit stop();
-//     }
-// }
+
+void externalCalibrationWidget::StartHandSetCollector(bool checked){
+    if (checked){
+        emit startHand(H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
+        emit stopAuto();
+    } else {
+        emit stopHand();
+    }
+}

@@ -17,7 +17,7 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/aruco/charuco.hpp>
 #include <opencv2/opencv.hpp>
-#include "ChArucoСalculateCalibrate.h"
+#include "ChArucoCalculateCalibrate.h"
 
 class ChArukoSaveCalibration : public QDialog {
     Q_OBJECT
@@ -53,7 +53,6 @@ private:
     // Метод для обновления миниатюрного изображения доски
     void updateBoardImage();
 
-    // Метод для сохранения изображения доски на диск
     void CalculateCalibration();
 
 };

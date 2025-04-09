@@ -15,6 +15,14 @@ namespace fs = std::filesystem;
 class CharucoCalibrator {
 public:
     /**
+     * @brief Режим захвата изображений
+     */
+    enum CaptureMode {
+        MANUAL,     // Ручной режим - снимок делается по нажатию пробела, если доска обнаружена
+        AUTOMATIC   // Автоматический режим - снимок делается каждые 7 секунд, если доска обнаружена
+    };
+
+    /**
      * @brief Конструктор, задающий параметры Charuco доски.
      * @param squaresX Количество квадратов по горизонтали (должно быть >=2)
      * @param squaresY Количество квадратов по вертикали (должно быть >=2)
@@ -57,6 +65,7 @@ public:
                 }
             }
         }
+        std::cout<<"images : "<<imagesLoaded<<"\n";
 
         return imagesLoaded;
     }
@@ -82,7 +91,6 @@ public:
         std::vector<int> markerIds;
         std::vector<std::vector<cv::Point2f>> markerCorners;
         cv::aruco::detectMarkers(gray, dictionary, markerCorners, markerIds);
-        
         if (markerIds.empty()) {
             return false;
         }
@@ -92,13 +100,13 @@ public:
         cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, gray, board, 
                                            currentCharucoCorners, currentCharucoIds);
 
-        bool validPose = false;
-        if (!cameraMatrix.empty()) {
-            validPose = cv::aruco::estimatePoseCharucoBoard(
-                currentCharucoCorners, currentCharucoIds, board,
-                cameraMatrix, distCoeffs, rvec, tvec
-            );
-        }
+        // bool validPose = false;
+        // if (!cameraMatrix.empty()) {
+        //     validPose = cv::aruco::estimatePoseCharucoBoard(
+        //         currentCharucoCorners, currentCharucoIds, board,
+        //         cameraMatrix, distCoeffs, rvec, tvec
+        //     );
+        // }
 
         if (currentCharucoCorners.total() < 4) {
             return false;
@@ -178,6 +186,74 @@ public:
         return true;
     }
 
+
+    /**
+     * @brief Захватывает изображения с камеры для формирования сета калибровочных фото.
+     * 
+     * @param mode Режим захвата (MANUAL или AUTOMATIC)
+     * @param saveDirectory Путь к директории, где будут сохраняться изображения
+     * @param frame Текущий захваченный кадр
+     * @return Последнее отображённое изображение с нанесённой разметкой детекции
+     */
+    cv::Mat captureCalibrationSet(CaptureMode mode, const std::string& saveDirectory, cv::Mat frame ) {
+        // Проверяем существование директории; если не существует – создаём её
+        if (!fs::exists(saveDirectory)) {
+            fs::create_directory(saveDirectory);
+        }
+
+        // Объявляем статические переменные для сохранения состояния между вызовами
+        static int imageIndex = 0;
+        static auto lastAutoCaptureTime = std::chrono::steady_clock::now();
+
+        cv::Mat displayFrame;
+        frame.copyTo(displayFrame);
+
+        // Детекция маркеров
+        std::vector<int> markerIds;
+        std::vector<std::vector<cv::Point2f>> markerCorners;
+        cv::aruco::detectMarkers(displayFrame, dictionary, markerCorners, markerIds);
+
+        cv::Mat currentCharucoCorners, currentCharucoIds;
+        bool foundCharuco = false;
+        if (!markerIds.empty()) {
+            cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, displayFrame, board, 
+                                                currentCharucoCorners, currentCharucoIds);
+            if (currentCharucoCorners.total() >= 6) {
+                foundCharuco = true;
+                // Рисуем обнаруженные маркеры и Charuco углы на displayFrame
+                // cv::aruco::drawDetectedMarkers(displayFrame, markerCorners, markerIds);
+                cv::aruco::drawDetectedCornersCharuco(displayFrame, currentCharucoCorners, currentCharucoIds);
+            }
+        }
+
+        // Используем минимальное время ожидания, чтобы не задерживать обработку (можно заменить обработкой событий в Qt)
+        int key = cv::waitKey(1);
+
+        if (mode == MANUAL) {
+            // Ручной режим: сохраняем изображение, если нажата пробел и обнаружена доска
+            if (key == 32 && foundCharuco) { // 32 - код пробела
+                std::string filename = saveDirectory + "/image_" + std::to_string(imageIndex++) + ".png";
+                cv::imwrite(filename, frame);
+                addCalibrationImage(frame);
+                std::cout << "Сохранено изображение: " << filename << std::endl;
+            }
+        } else { // AUTOMATIC режим
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastAutoCaptureTime).count();
+            if (elapsed >= 2) {
+                if (foundCharuco) {
+                    std::string filename = saveDirectory + "/image_" + std::to_string(imageIndex++) + ".png";
+                    cv::imwrite(filename, frame);
+                    addCalibrationImage(frame);
+                    std::cout << "Сохранено изображение: " << filename << std::endl;
+                }
+                lastAutoCaptureTime = now;
+            }
+        }
+        return displayFrame;
+    }
+
+
 private:
     // Параметры доски
     int squaresX, squaresY;
@@ -194,7 +270,7 @@ private:
     cv::Mat cameraMatrix, distCoeffs;
     std::vector<cv::Mat> rvecs, tvecs;
     cv::Mat rvec, tvec; // Для оценки позы
-    cv::Size imageSize ;
+    cv::Size imageSize;
 };
 
 #endif // CHARUCO_CALIBRATOR_H

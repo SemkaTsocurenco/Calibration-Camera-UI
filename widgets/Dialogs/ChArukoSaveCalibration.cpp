@@ -114,9 +114,6 @@ void ChArukoSaveCalibration::updateBoardImage() {
 
 void ChArukoSaveCalibration::CalculateCalibration() {
 
-
-
-
     QString imagesDir = QFileDialog::getExistingDirectory(
         this,
         "Выберите папку с изображениями",

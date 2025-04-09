@@ -29,8 +29,8 @@ private slots:
     void CreateCalibrateFile();
     
 signals:
-    void startAuto();
-    void startHand();
+    void startAuto(int, int, float, float, int);
+    void startHand(int, int, float, float, int);
     void stopAuto();
     void stopHand();
     
