@@ -141,4 +141,15 @@ void ChArucoSaveBoardDialog::saveBoardToDisk() {
         QMessageBox::information(this, "Успех", "Доска успешно сохранена!");
     }
 
+    cv::FileStorage fsyaml(fileName.toStdString() + "_params.yaml", cv::FileStorage::WRITE);
+    if (fsyaml.isOpened()) {
+        fsyaml 
+        << "W_count" << W_count->value()
+        << "H_count" << H_count->value()
+        << "SquareSize" << SquareSize->value()
+        << "MarkerSize" << MarkerSize->value()
+        << "currentDictID" << currentDictID;
+    }
+    
+
 }

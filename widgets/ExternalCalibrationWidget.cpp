@@ -104,12 +104,16 @@ void externalCalibrationWidget::StartAutoSetCollector(bool checked){
 
 void externalCalibrationWidget::onCreateChArukoClicked() {
     emit stop();  
-    saveArucoDialog = new ChArucoSaveBoardDialog(this, H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());
-    saveArucoDialog->exec();
+    saveChArucoBoardDialog = new ChArucoSaveBoardDialog(this, H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());
+    saveChArucoBoardDialog->exec();
     emit resumeRequested();
 }
 
 void externalCalibrationWidget::CreateCalibrateFile(){
+    emit stop();  
+    saveCalibrationDialog = new ChArukoSaveCalibration(this, H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());
+    saveCalibrationDialog->exec();
+    emit resumeRequested();
 }
 
 

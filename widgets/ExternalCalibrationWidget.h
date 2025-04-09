@@ -15,6 +15,7 @@
 #include "ChArucoSaveBoardDialog.h"
 #include "ChArukoSaveCalibration.h"
 
+
 class externalCalibrationWidget : public QWidget {
     Q_OBJECT
 public:
@@ -53,8 +54,8 @@ private:
     QPushButton *StartAutoSetCollectorButton;
     QPushButton *CreateCalibrateFileButton;
 
-    ChArucoSaveBoardDialog *saveArucoDialog;
-
+    ChArucoSaveBoardDialog *saveChArucoBoardDialog;
+    ChArukoSaveCalibration *saveCalibrationDialog;
 };
 
 #endif // EXTERNALCALIBRATIONWIDGET_H

@@ -1,4 +1,5 @@
 #include "ArucoSaveMarkersDialog.h"
+#include <iostream>
 
 ArucoSaveMarkersDialog::ArucoSaveMarkersDialog(QWidget *parent, float size)
     : QDialog(parent)
@@ -56,8 +57,13 @@ void ArucoSaveMarkersDialog::saveMarkersToDisk()
     int markerSize =  sizeAruco->value();
 
     for (int markerId = 0; markerId < 4; ++markerId) {
+
         cv::Mat markerImage;
         cv::aruco::drawMarker(arucoDict, markerId, markerSize, markerImage);
+        int borderSize = sizeAruco->value() / 5;
+
+        cv::copyMakeBorder(markerImage, markerImage, borderSize, borderSize,
+               borderSize, borderSize, cv::BORDER_CONSTANT , 255);
 
         QString fileName = QString("marker_%1.png").arg(markerId);
         QString fullPath = saveDir + "/" + fileName;
@@ -68,5 +74,12 @@ void ArucoSaveMarkersDialog::saveMarkersToDisk()
         }
 
         qDebug() << "Сохранён файл:" << fullPath;
+    }
+
+    cv::FileStorage fsyaml(saveDir.toStdString() + "/Aruco_params.yaml", cv::FileStorage::WRITE);
+    if (fsyaml.isOpened()) {
+        fsyaml 
+        << "sizeAruco" <<  sizeAruco->value()
+        << "currentDictID" << currentDictID;
     }
 }
