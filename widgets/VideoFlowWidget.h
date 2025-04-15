@@ -9,7 +9,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QFileDialog>
-
+#include "CameraFlowDialog.h"
+#include "UDPFlowDialog.h"
 
 
 class VideoFlowWidget : public QWidget
@@ -27,9 +28,12 @@ signals:
     void contrastChanged(int value);
     void resolutionChanged(int value);
     void grayscaleToggled(bool enabled);
+    void udpSettingsEntered(const QString &ipAddress, int port);
 
 private:
-    QComboBox *cameraSelectCombo;
+    CameraFlowDialog *cameraFlowDialog;
+    QPushButton *openCameraFlowButton;
+    QPushButton *openUDPFlowButton;
     QPushButton *openVideoFileButton;
     QPushButton *closeButton;
 
@@ -40,6 +44,8 @@ private:
 
     void setupUi();
     void setupConnections();
+    void setupCameraSource();
+    void setupUdpSource();
 };
 
 #endif // VIDEOFLOWWIDGET_H

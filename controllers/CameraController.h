@@ -35,6 +35,8 @@ public:
 
     bool startCamera(int device);
     bool startVideoFile(const QString &filePath);
+    bool startUDP(const QString &ipAddress, int port);
+
     void stop();
 
     void internalCalibrate(int dictType, float sizeMarkers);

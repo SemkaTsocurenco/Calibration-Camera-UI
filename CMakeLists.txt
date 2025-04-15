@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
         widgets/Dialogs/ArucoSaveCalibration.cpp
         widgets/Dialogs/ChArukoSaveCalibration.cpp
         widgets/Dialogs/ChArucoSaveBoardDialog.cpp
+        widgets/Dialogs/CameraFlowDialog.h
+        widgets/Dialogs/UDPFlowDialog.h
 
         widgets/ExternalCalibrationWidget.cpp
         widgets/InternalCalibrationWidget.cpp

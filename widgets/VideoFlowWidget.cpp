@@ -3,30 +3,24 @@
 
 
 VideoFlowWidget::VideoFlowWidget(QWidget *parent)
-    : QWidget{parent}
+    : QWidget{parent}, cameraFlowDialog(new CameraFlowDialog(this))
 {
     setupUi();
     setupConnections();
 }
 
+
 void VideoFlowWidget::setupUi(){
-       // Выбор камеры и файла
-    cameraSelectCombo = new QComboBox(this);
-    cameraSelectCombo->addItem("Камера 0", 0);
-    cameraSelectCombo->addItem("Камера 1", 1);
-    cameraSelectCombo->addItem("Камера 2", 2);
-    cameraSelectCombo->addItem("Камера 3", 3);
 
-    resolutionSlider = new QSlider(Qt::Horizontal, this);
-    resolutionSlider-> setRange(1, 20);
-    resolutionSlider-> setValue(10);
-    resolutionSlider->setTickPosition(QSlider::TicksBothSides);
-    resolutionSlider->setTickInterval(5);
-    resolutionSlider->setSingleStep(2.5);
 
+
+    openCameraFlowButton = new QPushButton("Принять видео с камеры", this);
+    openUDPFlowButton = new QPushButton("Принять видео по UDP", this);
     openVideoFileButton = new QPushButton("Открыть видеофайл", this);
     closeButton = new QPushButton("Стоп", this);
     grayscaleCheckBox = new QCheckBox("Чёрно-белое изображение", this);
+
+
 
     brightnessSlider = new QSlider(Qt::Horizontal, this);
     contrastSlider = new QSlider(Qt::Horizontal, this);
@@ -35,8 +29,20 @@ void VideoFlowWidget::setupUi(){
     contrastSlider->setRange(0, 100);
     contrastSlider->setValue(50);
 
+
+    resolutionSlider = new QSlider(Qt::Horizontal, this);
+    resolutionSlider-> setRange(1, 20);
+    resolutionSlider-> setValue(10);
+    resolutionSlider->setTickPosition(QSlider::TicksBothSides);
+    resolutionSlider->setTickInterval(5);
+    resolutionSlider->setSingleStep(2.5);
+
+
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(cameraSelectCombo);
+    // layout->addWidget(cameraSelectCombo);
+
+    layout->addWidget(openCameraFlowButton);
+    layout->addWidget(openUDPFlowButton);
     layout->addWidget(openVideoFileButton);
     layout->addWidget(closeButton);
 
@@ -53,9 +59,9 @@ void VideoFlowWidget::setupUi(){
 };
 
 void VideoFlowWidget::setupConnections(){
-    connect(cameraSelectCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index){
-        emit cameraSelected(cameraSelectCombo->itemData(index).toInt());
-    });
+    connect(openCameraFlowButton, &QPushButton::clicked, this, &VideoFlowWidget::setupCameraSource);
+    connect(openUDPFlowButton, &QPushButton::clicked, this, &VideoFlowWidget::setupUdpSource);
+
 
     connect(openVideoFileButton, &QPushButton::clicked, this, [=](){
         emit stopped();  
@@ -73,6 +79,22 @@ void VideoFlowWidget::setupConnections(){
     connect(contrastSlider, &QSlider::valueChanged, this, &VideoFlowWidget::contrastChanged);
     connect(resolutionSlider, &QSlider::valueChanged, this, &VideoFlowWidget::resolutionChanged);
     connect(grayscaleCheckBox, &QCheckBox::toggled, this, &VideoFlowWidget::grayscaleToggled);
+
+    connect(cameraFlowDialog, &CameraFlowDialog::cameraSelected, this, &VideoFlowWidget::cameraSelected);
 };
 
 
+
+void VideoFlowWidget::setupCameraSource(){
+    cameraFlowDialog->exec(); // Показываем уже созданный диалог
+}
+
+void VideoFlowWidget::setupUdpSource(){
+    UdpFlowDialog *udpDialog = new UdpFlowDialog(this);
+    connect(udpDialog, &UdpFlowDialog::udpSettingsEntered, this, [this](const QString &ipAddress, int port){
+
+        emit udpSettingsEntered(ipAddress, port);
+    });
+    udpDialog->exec();
+    udpDialog->deleteLater();
+}

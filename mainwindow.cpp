@@ -65,6 +65,8 @@ void MainWindow::setupConnections() {
 
     connect(videoFlowWidget, &VideoFlowWidget::cameraSelected, cameraController, &CameraController::startCamera);
     connect(videoFlowWidget, &VideoFlowWidget::videoFileOpened, cameraController, &CameraController::startVideoFile);
+    // connect(videoFlowWidget, &VideoFlowWidget::udpSettingsEntered, cameraController, &CameraController::startUDP);
+
     connect(videoFlowWidget, &VideoFlowWidget::stopped, cameraController, &CameraController::stop);
 
     connect(videoFlowWidget, &VideoFlowWidget::brightnessChanged, cameraController, &CameraController::setBrightness);
