@@ -53,8 +53,8 @@ void MainWindow::createMenus() {
     QMenu *calibrationMenu = menuBar->addMenu("Режимы");
 
     actionVideoFlowSet = new QAction("Настроить параметры видео потока", this);
-    actionInternalCalibration = new QAction("Внутренняя калибровка", this);
-    actionExternalCalibration = new QAction("Внешняя калибровка", this);
+    actionInternalCalibration = new QAction("Внешняя калибровка", this);
+    actionExternalCalibration = new QAction("Внутренняя калибровка", this);
 
     calibrationMenu->addAction(actionVideoFlowSet);
     calibrationMenu->addAction(actionInternalCalibration);
