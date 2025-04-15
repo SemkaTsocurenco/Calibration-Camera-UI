@@ -51,6 +51,43 @@ bool CameraController::startVideoFile(const QString &filePath){
     return true;
 }
 
+
+bool CameraController::startUDP(const QString &ipAddress, int port) {
+    stop(); // Останавливаем любой предыдущий источник
+
+    // Формирование GStreamer пайплайна.
+    // Примечание: для корректной работы формата H264 и передачи в OpenCV через appsink
+    // рекомендуется использовать следующие элементы: rtph264depay, h264parse, avdec_h264, videoconvert и appsink.
+    QString pipeline;
+    if (ipAddress.isEmpty()) {
+        pipeline = QString(
+            "udpsrc port=%1 ! application/x-rtp, clock-rate=90000, encoding-name=H264 ! "
+            "rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink"
+        ).arg(port);
+    } else {
+        pipeline = QString(
+            "udpsrc address=%1 port=%2 ! application/x-rtp, clock-rate=90000, encoding-name=H264 ! "
+            "rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink"
+        ).arg(ipAddress).arg(port);
+    }
+
+    qDebug() << "GStreamer pipeline:" << pipeline;
+
+    // Открываем видео через GStreamer с помощью OpenCV
+    cap.open(pipeline.toStdString(), cv::CAP_GSTREAMER);
+    if (!cap.isOpened()){
+        emit errorOccurred("Не удалось открыть UDP-поток по адресу " + ipAddress +
+                             " и порту " + QString::number(port));
+        return false;
+    }
+    
+    timer.start(10);
+    sourceType = UDP;
+    emit started(UDP);
+    return true;
+}
+
+
 void CameraController::grabFrame() {
 
     cap >> frame;

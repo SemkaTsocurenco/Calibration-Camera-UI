@@ -1,7 +1,5 @@
-
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
-
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
@@ -19,6 +17,7 @@ public:
     enum SourceType {
         Camera,
         VideoFile,
+        UDP,        // Добавляем поддержку UDP
         None
     };
 
@@ -35,12 +34,11 @@ public:
 
     bool startCamera(int device);
     bool startVideoFile(const QString &filePath);
-    bool startUDP(const QString &ipAddress, int port);
+    bool startUDP(const QString &ipAddress, int port); // Объявление метода для UDP
 
     void stop();
 
     void internalCalibrate(int dictType, float sizeMarkers);
-
     void internalCalibrateStop();
 
     void externalStartHand(int h, int w, float sqSize, float markerSize, int dictID);
@@ -59,7 +57,6 @@ signals:
     void stopped();
     void errorOccurred(const QString &error);
     void internalCalibrateSave();
-
 
 private slots:
     void grabFrame();
@@ -95,8 +92,7 @@ private:
     float MarkerSize;
     int DictID;
 
-    // ArucoDetector ArucoDetector;
+    // Другие члены класса…
 };
-
 
 #endif // CAMERACONTROLLER_H
