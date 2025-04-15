@@ -109,7 +109,7 @@ void externalCalibrationWidget::CreateCalibrateFile(){
 
 void externalCalibrationWidget::StartAutoSetCollector(bool checked){
     if (checked){
-        emit startAuto(H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
+        emit startAuto(H_count->value()+2, W_count->value()+2, squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
         emit stopHand();
     } else {
         emit stopAuto();
@@ -119,7 +119,7 @@ void externalCalibrationWidget::StartAutoSetCollector(bool checked){
 
 void externalCalibrationWidget::StartHandSetCollector(bool checked){
     if (checked){
-        emit startHand(H_count->value(), W_count->value(), squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
+        emit startHand(H_count->value()+2, W_count->value()+2, squareSize->value(), markerSize->value(), ArukoDICTSize->currentData().toInt());  
         emit stopAuto();
     } else {
         emit stopHand();

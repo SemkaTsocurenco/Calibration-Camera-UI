@@ -65,8 +65,6 @@ public:
                 }
             }
         }
-        std::cout<<"images : "<<imagesLoaded<<"\n";
-
         return imagesLoaded;
     }
 
@@ -75,7 +73,8 @@ public:
      * @param image Исходное изображение для калибровки
      * @return true, если изображение содержит достаточное количество углов для калибровки, иначе false.
      */
-    bool addCalibrationImage(const cv::Mat &image) {
+    bool addCalibrationImage(cv::Mat &image) {
+
         if (image.empty()) {
             throw std::runtime_error("Пустое изображение!");
         }
@@ -87,41 +86,32 @@ public:
             gray = image;
         }
 
-        // Детекция маркеров
         std::vector<int> markerIds;
         std::vector<std::vector<cv::Point2f>> markerCorners;
         cv::aruco::detectMarkers(gray, dictionary, markerCorners, markerIds);
         if (markerIds.empty()) {
+            std::cerr << "Маркеры не найдены на изображении!\n";
             return false;
         }
 
-        // Интерполяция углов Charuco доски
         cv::Mat currentCharucoCorners, currentCharucoIds;
         cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, gray, board, 
-                                           currentCharucoCorners, currentCharucoIds);
+                                            currentCharucoCorners, currentCharucoIds);
 
-        // bool validPose = false;
-        // if (!cameraMatrix.empty()) {
-        //     validPose = cv::aruco::estimatePoseCharucoBoard(
-        //         currentCharucoCorners, currentCharucoIds, board,
-        //         cameraMatrix, distCoeffs, rvec, tvec
-        //     );
-        // }
-
-        if (currentCharucoCorners.total() < 4) {
+        if (currentCharucoCorners.total() < 6) {
+            std::cerr << "Найдено недостаточно углов: " << currentCharucoCorners.total() << "\n";
             return false;
         }
 
-        // Получаем данные из currentCharucoCorners как вектор cv::Point2f
         std::vector<cv::Point2f> corners;
-        for (int i = 0; i < currentCharucoCorners.rows; ++i) {
-            corners.push_back(cv::Point2f(currentCharucoCorners.at<float>(i, 0), currentCharucoCorners.at<float>(i, 1)));
+        for (int i = 0; i < currentCharucoCorners.total(); ++i) {
+            cv::Vec2f corner = currentCharucoCorners.at<cv::Vec2f>(i);
+            corners.emplace_back(corner[0], corner[1]);
         }
 
-        // Получаем данные из currentCharucoIds как вектор int
         std::vector<int> ids;
-        for (int i = 0; i < currentCharucoIds.rows; ++i) {
-            ids.push_back(currentCharucoIds.at<int>(i, 0));
+        for (int i = 0; i < currentCharucoIds.total(); ++i) {
+            ids.push_back(currentCharucoIds.at<int>(i));
         }
 
         allCharucoCorners.push_back(corners);
@@ -129,6 +119,8 @@ public:
 
         return true;
     }
+
+
 
     /**
      * @brief Производит калибровку камеры на основе добавленных изображений.
@@ -143,7 +135,6 @@ public:
 
         rvecs.clear();
         tvecs.clear();
-
         rmsError = cv::aruco::calibrateCameraCharuco(
             allCharucoCorners, allCharucoIds, board, imageSize,
             cameraMatrix, distCoeffs, rvecs, tvecs
@@ -218,11 +209,11 @@ public:
         if (!markerIds.empty()) {
             cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, displayFrame, board, 
                                                 currentCharucoCorners, currentCharucoIds);
+            cv::aruco::drawDetectedMarkers(displayFrame, markerCorners, markerIds);
+            cv::aruco::drawDetectedCornersCharuco(displayFrame, currentCharucoCorners, currentCharucoIds);
             if (currentCharucoCorners.total() >= 6) {
                 foundCharuco = true;
                 // Рисуем обнаруженные маркеры и Charuco углы на displayFrame
-                // cv::aruco::drawDetectedMarkers(displayFrame, markerCorners, markerIds);
-                cv::aruco::drawDetectedCornersCharuco(displayFrame, currentCharucoCorners, currentCharucoIds);
             }
         }
 
@@ -230,8 +221,8 @@ public:
         int key = cv::waitKey(1);
 
         if (mode == MANUAL) {
-            // Ручной режим: сохраняем изображение, если нажата пробел и обнаружена доска
-            if (key == 32 && foundCharuco) { // 32 - код пробела
+            // Ручной режим: сохраняем изображение, если нажата "s" и обнаружена доска
+            if ((key == 's' || key == 'S') && foundCharuco) {
                 std::string filename = saveDirectory + "/image_" + std::to_string(imageIndex++) + ".png";
                 cv::imwrite(filename, frame);
                 addCalibrationImage(frame);

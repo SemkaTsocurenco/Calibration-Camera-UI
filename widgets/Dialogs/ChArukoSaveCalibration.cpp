@@ -116,8 +116,8 @@ void ChArukoSaveCalibration::CalculateCalibration() {
 
     QString imagesDir = QFileDialog::getExistingDirectory(
         this,
-        "Выберите папку с изображениями",
-        QDir::homePath()
+        "Выберите папку с изображениями"
+        
     );
 
     if (imagesDir.isEmpty()) {
@@ -128,7 +128,6 @@ void ChArukoSaveCalibration::CalculateCalibration() {
     QString saveDir = QFileDialog::getSaveFileName(
         this,
         "Выберите папку для сохранения калибровки",
-        QDir::homePath(),
         "Файл калибровки (*.yaml *.xml)"
     );
 
@@ -143,9 +142,8 @@ void ChArukoSaveCalibration::CalculateCalibration() {
     double error;
     if (calibrator.calibrate(error)){
         if (calibrator.saveCalibration(saveDir.toStdString())){
-            // QMessageBox::information(this, "Успех", "Доска успешно сохранена!");
 
-            qDebug() << "Изоюражений найдено:  " << cout_of_image << "\nОшибка калибровки: " << error<<"\nФайл калибровки успешно сохранён в " <<  saveDir;
+            qDebug() << "Изображений найдено:  " << cout_of_image << "\nОшибка калибровки: " << error<<"\nФайл калибровки успешно сохранён в " <<  saveDir;
         } else {
             qDebug() << "Калибровка проведена успешно но выбран невеный файл для сохранения";
         }

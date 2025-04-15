@@ -37,18 +37,15 @@ void ChArucoSaveBoardDialog::setupUi() {
     W_count = new QSpinBox(this);
     W_count->setRange(2, 20);     
     W_count->setValue(w_count);
-    std::cout<<"\nA1\n";
     ArukoDICTSize = new QComboBox(this);
     ArukoDICTSize->addItem("Метка 4x4", cv::aruco::DICT_4X4_50);
     ArukoDICTSize->addItem("Метка 5x5", cv::aruco::DICT_5X5_100);
     ArukoDICTSize->addItem("Метка 6x6", cv::aruco::DICT_6X6_100);
     ArukoDICTSize->addItem("Метка 7x7", cv::aruco::DICT_7X7_50);
-    std::cout<<"\nA2\n";
 
     QLabel* label = new QLabel("Выбор размера ChAruco доски", this);
     QLabel* labelH = new QLabel("H:", this);
     QLabel* labelW = new QLabel("W:", this);
-    std::cout<<"\nA3\n";
 
     QHBoxLayout* layout1 = new QHBoxLayout();
     layout1->addWidget(label); // Добавляем заголовок
@@ -56,21 +53,17 @@ void ChArucoSaveBoardDialog::setupUi() {
     layout1->addWidget(H_count); // Добавляем поле ввода для H
     layout1->addWidget(labelW); // Добавляем подпись для W
     layout1->addWidget(W_count); // Добавляем поле ввода для W
-    std::cout<<"\nA4\n";
 
     QHBoxLayout* layout2 = new QHBoxLayout();
     layout2->addWidget(new QLabel("squareSize:", this)); // Добавляем подпись для H
     layout2->addWidget(SquareSize); // Добавляем поле ввода для H
     layout2->addWidget(new QLabel("markerSize:", this)); // Добавляем подпись для W
     layout2->addWidget(MarkerSize); // Добавляем поле ввода для W
-    std::cout<<"\nA5\n";
 
     SaveOnDisk = new QPushButton("Сохранить Charuco доску");
     // Лейаут для миниатюрного изображения
     boardImageLabel = new QLabel(this);
 
-
-    std::cout<<"\nA6\n";
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(layout1);
