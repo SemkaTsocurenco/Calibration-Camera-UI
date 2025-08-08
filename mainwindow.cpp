@@ -39,9 +39,6 @@ void MainWindow::setupUi() {
     createMenus();
 
     cameraController = new CameraController(this);
-
-    // запускаем по умолчанию камеру 0
-    cameraController->startCamera(0);
 }
 
 
@@ -53,8 +50,8 @@ void MainWindow::createMenus() {
     QMenu *calibrationMenu = menuBar->addMenu("Режимы");
 
     actionVideoFlowSet = new QAction("Настроить параметры видео потока", this);
-    actionInternalCalibration = new QAction("Внешняя калибровка", this);
-    actionExternalCalibration = new QAction("Внутренняя калибровка", this);
+    actionInternalCalibration = new QAction("Внутренняя калибровка", this);
+    actionExternalCalibration = new QAction("Внешняя калибровка", this);
 
     calibrationMenu->addAction(actionVideoFlowSet);
     calibrationMenu->addAction(actionInternalCalibration);
